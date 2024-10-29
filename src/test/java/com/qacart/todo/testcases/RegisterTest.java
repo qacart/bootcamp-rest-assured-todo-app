@@ -52,7 +52,6 @@ public class RegisterTest {
                 .password(faker.internet().password())
                 .build();
 
-        System.out.println(user);
 
         Response response = given()
                 .baseUri("https://todo.qacart.com/api/v1")
