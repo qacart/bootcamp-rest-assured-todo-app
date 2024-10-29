@@ -1,17 +1,16 @@
 package com.qacart.todo.testcases;
 
 import com.github.javafaker.Faker;
+import com.qacart.todo.clients.TodoClient;
+import com.qacart.todo.clients.UserClient;
 import com.qacart.todo.models.Todo;
 import com.qacart.todo.models.TodoResponse;
 import com.qacart.todo.models.User;
 import com.qacart.todo.models.UserResponse;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import static io.restassured.RestAssured.given;
 
 public class DeleteTodoTest {
 
@@ -30,12 +29,7 @@ public class DeleteTodoTest {
                 .password(faker.internet().password())
                 .build();
 
-        Response registerResponse = given()
-                .baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(registerUser)
-                .when().post("/users/register")
-                .then().extract().response();
+        Response registerResponse = UserClient.registerApi(registerUser);
 
         userResponse = registerResponse.body().as(UserResponse.class);
         Assert.assertEquals(registerResponse.statusCode(), 201);
@@ -44,12 +38,7 @@ public class DeleteTodoTest {
                 .item(faker.book().title())
                 .isCompleted(false).build();
 
-        Response addTodoResponse = given().baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(todo)
-                .auth().oauth2(userResponse.getAccess_token())
-                .when().post("/tasks")
-                .then().extract().response();
+        Response addTodoResponse = TodoClient.addTodoApi(todo, userResponse);
 
        todoResponse = addTodoResponse.body().as(TodoResponse.class);
        Assert.assertEquals(addTodoResponse.statusCode(), 201);
@@ -57,11 +46,7 @@ public class DeleteTodoTest {
 
     @Test
     void should_be_able_to_delete_todo() {
-        Response response = given().baseUri("https://todo.qacart.com/api/v1")
-                .pathParam("id", todoResponse.get_id())
-                .auth().oauth2(userResponse.getAccess_token())
-                .when().delete("/tasks/{id}")
-                .then().extract().response();
+        Response response = TodoClient.deleteTodoApi(todoResponse, userResponse);
 
         TodoResponse todoResponse = response.body().as(TodoResponse.class);
         Assert.assertEquals(response.statusCode(), 200);
