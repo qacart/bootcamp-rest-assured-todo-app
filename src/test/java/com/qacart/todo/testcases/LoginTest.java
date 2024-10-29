@@ -1,16 +1,15 @@
 package com.qacart.todo.testcases;
 
 import com.github.javafaker.Faker;
+import com.qacart.todo.clients.UserClient;
 import com.qacart.todo.models.ErrorResponse;
 import com.qacart.todo.models.User;
 import com.qacart.todo.models.UserResponse;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static io.restassured.RestAssured.given;
 
 public class LoginTest {
 
@@ -26,12 +25,7 @@ public class LoginTest {
                 .password(faker.internet().password())
                 .build();
 
-        Response response = given()
-                .baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(registerUser)
-                .when().post("/users/register")
-                .then().extract().response();
+        Response response = UserClient.registerApi(registerUser);
         Assert.assertEquals(response.statusCode(), 201);
 
     }
@@ -43,12 +37,7 @@ public class LoginTest {
                 .password(registerUser.getPassword())
                 .build();
 
-        Response response = given()
-                .baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(loginUser)
-                .when().post("/users/login")
-                .then().extract().response();
+        Response response = UserClient.loginApi(loginUser);
 
         UserResponse userResponse = response.body().as(UserResponse.class);
         Assert.assertEquals(response.statusCode(), 200);
@@ -64,12 +53,7 @@ public class LoginTest {
                 .password("WrongPassword")
                 .build();
 
-        Response response = given()
-                .baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(loginUser)
-                .when().post("/users/login")
-                .then().extract().response();
+        Response response = UserClient.loginApi(loginUser);
 
         ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
         Assert.assertEquals(response.statusCode(), 401);

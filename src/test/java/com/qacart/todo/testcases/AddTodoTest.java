@@ -1,14 +1,13 @@
 package com.qacart.todo.testcases;
 
 import com.github.javafaker.Faker;
+import com.qacart.todo.clients.TodoClient;
+import com.qacart.todo.clients.UserClient;
 import com.qacart.todo.models.*;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import static io.restassured.RestAssured.given;
 
 public class AddTodoTest {
     UserResponse userResponse;
@@ -25,12 +24,7 @@ public class AddTodoTest {
                 .build();
 
 
-        Response response = given()
-                .baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(registerUser)
-                .when().post("/users/register")
-                .then().extract().response();
+        Response response = UserClient.registerApi(registerUser);
 
         userResponse = response.body().as(UserResponse.class);
 
@@ -44,12 +38,7 @@ public class AddTodoTest {
                 .item(faker.book().title())
                 .isCompleted(false).build();
 
-        Response response = given().baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(todo)
-                .auth().oauth2(userResponse.getAccess_token())
-                .when().post("/tasks")
-                .then().extract().response();
+        Response response = TodoClient.addTodoApi(todo, userResponse);
 
         TodoResponse todoResponse = response.body().as(TodoResponse.class);
         Assert.assertEquals(response.statusCode(), 201);
@@ -65,12 +54,7 @@ public class AddTodoTest {
         Todo todo = Todo.builder()
                 .isCompleted(false).build();
 
-        Response response = given().baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(todo)
-                .auth().oauth2(userResponse.getAccess_token())
-                .when().post("/tasks")
-                .then().extract().response();
+        Response response = TodoClient.addTodoApi(todo, userResponse);
 
         ErrorResponse errorResponse = response.getBody().as(ErrorResponse.class);
         Assert.assertEquals(response.statusCode(), 400);

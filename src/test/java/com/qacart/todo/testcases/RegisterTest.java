@@ -1,16 +1,14 @@
 package com.qacart.todo.testcases;
 
 import com.github.javafaker.Faker;
+import com.qacart.todo.clients.UserClient;
 import com.qacart.todo.models.ErrorResponse;
 import com.qacart.todo.models.User;
 import com.qacart.todo.models.UserResponse;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import static io.restassured.RestAssured.given;
 
 public class RegisterTest {
 
@@ -30,12 +28,7 @@ public class RegisterTest {
                 .password(faker.internet().password())
                 .build();
 
-        Response response = given()
-                .baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(user)
-                .when().post("/users/register")
-                .then().extract().response();
+        Response response = UserClient.registerApi(user);
 
         UserResponse userResponse = response.body().as(UserResponse.class);
         Assert.assertEquals(response.statusCode(), 201);
@@ -53,12 +46,7 @@ public class RegisterTest {
                 .build();
 
 
-        Response response = given()
-                .baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(user)
-                .when().post("/users/register")
-                .then().extract().response();
+        Response response = UserClient.registerApi(user);
 
         ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
         Assert.assertEquals(response.statusCode(), 400);
@@ -73,12 +61,7 @@ public class RegisterTest {
                 .password(faker.internet().password())
                 .build();
 
-        Response response = given()
-                .baseUri("https://todo.qacart.com/api/v1")
-                .contentType(ContentType.JSON)
-                .body(user)
-                .when().post("/users/register")
-                .then().extract().response();
+        Response response = UserClient.registerApi(user);
 
         ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
         Assert.assertEquals(response.statusCode(), 400);
