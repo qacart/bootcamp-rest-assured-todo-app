@@ -69,7 +69,7 @@ public class LoginTest {
                 .contentType(ContentType.JSON)
                 .body(loginUser)
                 .when().post("/users/login")
-                .then().log().all().extract().response();
+                .then().extract().response();
 
         ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
         Assert.assertEquals(response.statusCode(), 401);
