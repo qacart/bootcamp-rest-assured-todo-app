@@ -1,6 +1,7 @@
 package com.qacart.todo.clients;
 
 import com.qacart.todo.models.User;
+import com.qacart.todo.utils.ConfigUtil;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
@@ -10,16 +11,18 @@ public class UserClient {
 
     public static Response registerApi(User user) {
         return given()
-                .baseUri("https://todo.qacart.com/api/v1")
+                .baseUri(ConfigUtil.getInstance().getBaseUrl())
                 .contentType(ContentType.JSON)
                 .body(user)
                 .when().post("/users/register")
                 .then().extract().response();
+
+
     }
 
     public static Response loginApi(User loginUser) {
         return given()
-                .baseUri("https://todo.qacart.com/api/v1")
+                .baseUri(ConfigUtil.getInstance().getBaseUrl())
                 .contentType(ContentType.JSON)
                 .body(loginUser)
                 .when().post("/users/login")
