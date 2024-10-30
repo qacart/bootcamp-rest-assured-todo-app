@@ -2,6 +2,7 @@ package com.qacart.todo.clients;
 
 import com.qacart.todo.models.User;
 import com.qacart.todo.utils.ConfigUtil;
+import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
@@ -9,6 +10,7 @@ import static io.restassured.RestAssured.given;
 
 public class UserClient {
 
+    @Step
     public static Response registerApi(User user) {
         return given()
                 .baseUri(ConfigUtil.getInstance().getBaseUrl())
@@ -16,10 +18,9 @@ public class UserClient {
                 .body(user)
                 .when().post("/users/register")
                 .then().extract().response();
-
-
     }
 
+    @Step
     public static Response loginApi(User loginUser) {
         return given()
                 .baseUri(ConfigUtil.getInstance().getBaseUrl())
